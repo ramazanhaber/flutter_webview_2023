@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -18,6 +19,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw 'Could not launch $url';
+    }
+  }
 
   late WebViewController controller;
   @override
@@ -53,11 +61,28 @@ class _MyAppState extends State<MyApp> {
           onPageStarted: (String url) {},
           onPageFinished: (String url) {},
           onWebResourceError: (WebResourceError error) {},
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
+          onNavigationRequest: (NavigationRequest request) async {
+            final url = request.url;
+            if (url.startsWith('https://www.youtube.com/')) {
               return NavigationDecision.prevent;
+            }else if (url.startsWith('whatsapp://send')) {
+              _launchUrl(url);
+              return NavigationDecision.prevent;
+            } else if (url.startsWith('tel:')) {
+              _launchUrl(url);
+              return NavigationDecision.prevent;
+            } else if (url.startsWith('mailto:')) {
+              _launchUrl(url);
+              return NavigationDecision.prevent;
+            } else if (url.startsWith('https://www.facebook.com/')) {
+              return NavigationDecision.navigate;
+            } else if (url.startsWith('https://twitter.com/')) {
+              return NavigationDecision.navigate;
+            } else if (url.startsWith('https://www.instagram.com/')) {
+              return NavigationDecision.navigate;
+            } else {
+              return NavigationDecision.navigate;
             }
-            return NavigationDecision.navigate;
           },
         ),
       )
