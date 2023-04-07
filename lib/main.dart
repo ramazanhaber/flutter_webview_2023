@@ -109,6 +109,11 @@ class _MyAppState extends State<MyApp> {
                   // }
                   _onBack();
                 }
+                if (_currentPosition - _startPosition < -50) {
+                  if (await controller.canGoForward()) {
+                    controller.goForward();
+                  }
+                }
                 setState(() {
                   _currentPosition = 0.0;
                   _startPosition = 0.0;
