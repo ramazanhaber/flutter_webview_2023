@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -33,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     controller =
-    WebViewController.fromPlatformCreationParams(params);
+        WebViewController.fromPlatformCreationParams(params);
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
       (controller.platform as AndroidWebViewController)
@@ -76,7 +78,6 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -88,8 +89,8 @@ class _MyAppState extends State<MyApp> {
       home:   WillPopScope(
         onWillPop: _onBack,
         child: Scaffold(
-         body: SafeArea(
-           child: GestureDetector(
+          body: SafeArea(
+            child: GestureDetector(
               onHorizontalDragStart: (details) {
                 _startPosition = details.localPosition.dx;
                 print(_startPosition);
@@ -103,10 +104,10 @@ class _MyAppState extends State<MyApp> {
               },
               onHorizontalDragEnd: (details) async {
                 if (_currentPosition - _startPosition > 50) {
-                  _onBack();
                   // if (await controller.canGoBack()) {
                   //   controller.goBack();
                   // }
+                  _onBack();
                 }
                 setState(() {
                   _currentPosition = 0.0;
@@ -115,7 +116,11 @@ class _MyAppState extends State<MyApp> {
               },
               child: Stack(
                 children: [
-                  WebViewWidget(controller: controller),
+                  WebViewWidget(controller: controller
+                  , gestureRecognizers: Set()
+                      ..add(Factory<VerticalDragGestureRecognizer>(
+                              () => VerticalDragGestureRecognizer())),
+                  ),
                   Positioned(
                     left: _currentPosition - 50.0,
                     top: 50.0,
@@ -127,13 +132,10 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-         ),
+          ),
         ),
       ),
     );
   }
 
 }
-
-
-
