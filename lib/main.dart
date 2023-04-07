@@ -103,9 +103,10 @@ class _MyAppState extends State<MyApp> {
               },
               onHorizontalDragEnd: (details) async {
                 if (_currentPosition - _startPosition > 50) {
-                  if (await controller.canGoBack()) {
-                    controller.goBack();
-                  }
+                  _onBack();
+                  // if (await controller.canGoBack()) {
+                  //   controller.goBack();
+                  // }
                 }
                 setState(() {
                   _currentPosition = 0.0;
