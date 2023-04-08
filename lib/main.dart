@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://www.roketnot.com/'));
+      ..loadRequest(Uri.parse('https://www.trendyol.com/'));
   }
 
   late double _currentPosition = 0.0;
@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  int sensitivity=100;
 
   @override
   Widget build(BuildContext context) {
@@ -128,16 +129,17 @@ class _MyAppState extends State<MyApp> {
                 });
               },
               onHorizontalDragEnd: (details) async {
-                if (_currentPosition - _startPosition > 50) {
-                  // if (await controller.canGoBack()) {
-                  //   controller.goBack();
-                  // }
+                if (_currentPosition - _startPosition > sensitivity) {
                   _onBack();
-                }
-                if (_currentPosition - _startPosition < -50) {
+                } else if (_currentPosition - _startPosition < -sensitivity) {
                   if (await controller.canGoForward()) {
                     controller.goForward();
                   }
+                } else {
+                  // Sayfayı kaydırma işlemi
+                  print(_currentPosition.toString()+"!!");
+
+
                 }
                 setState(() {
                   _currentPosition = 0.0;
@@ -147,7 +149,7 @@ class _MyAppState extends State<MyApp> {
               child: Stack(
                 children: [
                   WebViewWidget(controller: controller
-                  , gestureRecognizers: Set()
+                    , gestureRecognizers: Set()
                       ..add(Factory<VerticalDragGestureRecognizer>(
                               () => VerticalDragGestureRecognizer())),
                   ),
@@ -169,3 +171,5 @@ class _MyAppState extends State<MyApp> {
   }
 
 }
+
+
