@@ -32,6 +32,7 @@ package="com.ramzey.egitimwebview5">
 
 
 1.1 ADIM -> info.plist e şunları ekle
+
 <key>NSAppTransportSecurity</key>
  <dict>
  <key>NSAllowsArbitraryLoads</key><true/>
@@ -41,6 +42,7 @@ package="com.ramzey.egitimwebview5">
   <string>sms</string>
   <string>tel</string>
 </array>
+
 
 
 2. ADIM ->  ctrl+shift+f ile ara(in project) neyi "minsdkversion" u ve aşağdaki gibi yap o sayfadakiler
