@@ -10,15 +10,11 @@ flutter pub add webview_flutter_wkwebview
 
 flutter pub add url_launcher
 
+
 package="com.ramzey.egitimwebview5">
-
-
 <uses-permission android:name="android.permission.INTERNET" />
-
 <application
     android:usesCleartextTraffic="true"
-
-
 <!-- Provide required visibility configuration for API level 30 and above -->
     <queries>
         <!-- If your app checks for SMS support -->
