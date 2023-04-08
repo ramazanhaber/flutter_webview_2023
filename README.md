@@ -1,12 +1,17 @@
 ![Untitled](https://user-images.githubusercontent.com/21096087/230730972-e0e19ec7-99ea-40e7-98ed-25a26e5a96fe.gif)
 
 kur : 
+
 flutter pub add webview_flutter
+
 flutter pub add webview_flutter_android
+
 flutter pub add webview_flutter_wkwebview
+
 flutter pub add url_launcher
 
 package="com.ramzey.egitimwebview5">
+
 
 <uses-permission android:name="android.permission.INTERNET" />
 
