@@ -126,6 +126,7 @@ class _MyAppState extends State<MyApp> {
                   _currentPosition = details.localPosition.dx;
                   print(_currentPosition);
 
+
                 });
               },
               onHorizontalDragEnd: (details) async {
