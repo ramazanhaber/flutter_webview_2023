@@ -188,32 +188,12 @@ class _WebPageState extends State<WebPage> {
                 Positioned(
                   bottom: 20,
                   left: 10,
-                  child: Platform.isIOS ? InkWell(
-                    onTap: _onBack,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                    ),
-                  ):SizedBox(),
+                  child: Platform.isIOS ? backButton(): backButton(), // Android için SizeBox diyebilirsin kapanır
                 ),
                 Positioned(
                   bottom: 20,
                   left: 70,
-                  child:Platform.isIOS ? InkWell(
-                    onTap: _onForward,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                    ),
-                  ):SizedBox(),
+                  child:Platform.isIOS ? nextButton():nextButton(),// Android için SizeBox diyebilirsin kapanır
                 ),
 
               ],
@@ -222,5 +202,33 @@ class _WebPageState extends State<WebPage> {
         ),
       ),
     );
+  }
+
+  InkWell nextButton() {
+    return InkWell(
+                  onTap: _onForward,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                  ),
+                );
+  }
+
+  InkWell backButton() {
+    return InkWell(
+                  onTap: _onBack,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                  ),
+                );
   }
 }
