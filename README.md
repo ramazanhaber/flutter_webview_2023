@@ -1,4 +1,5 @@
-![Untitled](https://user-images.githubusercontent.com/21096087/230730972-e0e19ec7-99ea-40e7-98ed-25a26e5a96fe.gif)
+![aaa](https://user-images.githubusercontent.com/21096087/230883107-f2ec893c-492c-4ee5-9456-9605f1eed341.png)
+
 
 kur : 
 
