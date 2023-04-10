@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -29,9 +30,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SafeArea(
-        child: WebPage(),
-      ),
+      home: WebPage(),
     );
   }
 }
@@ -52,9 +51,6 @@ class _WebPageState extends State<WebPage> {
   }
 
   late WebViewController controller;
-
-
-
 
   @override
   void initState() {
@@ -154,7 +150,9 @@ class _WebPageState extends State<WebPage> {
       controller.goBack();
       return false;
     } else {
-      exit(0);
+     // exit(0);
+     SystemNavigator.pop();
+     return false;
     }
   }
 
@@ -172,14 +170,14 @@ class _WebPageState extends State<WebPage> {
 
 
 
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: WillPopScope(
-        onWillPop: _onBack,
-        child: Scaffold(
-          appBar: null,
-          body: Container(
+    return Scaffold(
+      body: SafeArea(
+        child: WillPopScope(
+          onWillPop: _onBack,
+          child: Container(
             child: Stack(
               children: [
                 WebViewWidget(
