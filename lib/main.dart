@@ -1,25 +1,49 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(MyApp());
 }
+
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SafeArea(
+        child: WebPage(),
+      ),
+    );
+  }
+}
 
+class WebPage extends StatefulWidget {
+  WebPage({Key? key}) : super(key: key);
+
+  @override
+  State<WebPage> createState() => _WebPageState();
+}
+
+class _WebPageState extends State<WebPage> {
 
   Future<void> _launchUrl(String url) async {
     if (!await launchUrl(Uri.parse(url))) {
@@ -28,22 +52,24 @@ class _MyAppState extends State<MyApp> {
   }
 
   late WebViewController controller;
+
+
+
+
   @override
   void initState() {
     super.initState();
-
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
         allowsInlineMediaPlayback: true,
-        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+        mediaTypesRequiringUserAction: <PlaybackMediaTypes>{},
       );
     } else {
-      params = const PlatformWebViewControllerCreationParams();
+      params = PlatformWebViewControllerCreationParams();
     }
 
-    controller =
-        WebViewController.fromPlatformCreationParams(params);
+    controller = WebViewController.fromPlatformCreationParams(params);
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
       (controller.platform as AndroidWebViewController)
@@ -52,20 +78,50 @@ class _MyAppState extends State<MyApp> {
 
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
             // Update loading bar.
           },
           onPageStarted: (String url) {},
-          onPageFinished: (String url) {},
+          onPageFinished: (String url) {
+            setState(() {});
+          },
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) async {
             final url = request.url;
-            if (url.startsWith('https://www.youtube.com/')) {
+            final isPDF = request.url.endsWith('.pdf');
+            if (isPDF) {
+              if (Platform.isAndroid) {
+                if (await canLaunch(request.url)) {
+                  await launch(
+                    request.url,
+                    forceSafariVC: false,
+                    forceWebView: false,
+                    headers: <String, String>{'header_key': 'header_value'},
+                  );
+                  return NavigationDecision.prevent;
+                } else {
+                  return NavigationDecision.navigate;
+                }
+              } else if (Platform.isIOS) {
+                if (await canLaunch(request.url)) {
+                  await launch(
+                    request.url,
+                    forceSafariVC: true,
+                    headers: <String, String>{'header_key': 'header_value'},
+                  );
+                  return NavigationDecision.prevent;
+                } else {
+                  return NavigationDecision.navigate;
+                }
+              }else{
+                return NavigationDecision.navigate;
+              }
+            }else if (url.startsWith('https://www.youtube.com/')) {
               return NavigationDecision.prevent;
-            }else if (url.startsWith('whatsapp://send')) {
+            } else if (url.startsWith('whatsapp://send')) {
               _launchUrl(url);
               return NavigationDecision.prevent;
             } else if (url.startsWith('tel:')) {
@@ -86,11 +142,11 @@ class _MyAppState extends State<MyApp> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://www.trendyol.com/'));
+      ..loadRequest(Uri.parse(webLink));
   }
 
-  late double _currentPosition = 0.0;
-  late double _startPosition = 0.0;
+  String webLink ='https://roketnot.com/';
+  // String webLink ='https://www.trendyol.com/';
 
   Future<bool> _onBack() async {
     var value = await controller.canGoBack();
@@ -102,74 +158,69 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  int sensitivity=100;
+  Future<bool> _onForward() async {
+    var value = await controller.canGoForward();
+    if (value) {
+      controller.goForward();
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  int sensitivity = 100;
+
+
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home:   WillPopScope(
+    return Container(
+      child: WillPopScope(
         onWillPop: _onBack,
         child: Scaffold(
-          body: SafeArea(
-            child: GestureDetector(
-              onHorizontalDragStart: (details) {
-                _startPosition = details.localPosition.dx;
-                print(_startPosition);
-              },
-              onHorizontalDragUpdate: (details) {
-                setState(() {
-                  _currentPosition = details.localPosition.dx;
-                  print(_currentPosition);
-
-
-                });
-              },
-              onHorizontalDragEnd: (details) async {
-                if (_currentPosition - _startPosition > sensitivity) {
-                  _onBack();
-                } else if (_currentPosition - _startPosition < -sensitivity) {
-                  if (await controller.canGoForward()) {
-                    controller.goForward();
-                  }
-                } else {
-                  // Sayfayı kaydırma işlemi
-                  print(_currentPosition.toString()+"!!");
-
-
-                }
-                setState(() {
-                  _currentPosition = 0.0;
-                  _startPosition = 0.0;
-                });
-              },
-              child: Stack(
-                children: [
-                  WebViewWidget(controller: controller
-                    , gestureRecognizers: Set()
-                      ..add(Factory<VerticalDragGestureRecognizer>(
-                              () => VerticalDragGestureRecognizer())),
-                  ),
-                  Positioned(
-                    left: _currentPosition - 50.0,
-                    top: 50.0,
-                    child: Opacity(
-                      opacity: (_currentPosition - _startPosition)==0?1:50 / 50.0,
-                      child: const Icon(Icons.arrow_back),
+          appBar: null,
+          body: Container(
+            child: Stack(
+              children: [
+                WebViewWidget(
+                  controller: controller,
+                ),
+                Positioned(
+                  bottom: 20,
+                  left: 10,
+                  child: Platform.isIOS ? InkWell(
+                    onTap: _onBack,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
                     ),
-                  ),
-                ],
-              ),
+                  ):SizedBox(),
+                ),
+                Positioned(
+                  bottom: 20,
+                  left: 70,
+                  child:Platform.isIOS ? InkWell(
+                    onTap: _onForward,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                    ),
+                  ):SizedBox(),
+                ),
+
+              ],
             ),
           ),
         ),
       ),
     );
   }
-
 }
-
