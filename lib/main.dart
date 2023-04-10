@@ -150,8 +150,11 @@ class _WebPageState extends State<WebPage> {
       controller.goBack();
       return false;
     } else {
-     // exit(0);
-     SystemNavigator.pop();
+      if (Platform.isAndroid) {
+        SystemNavigator.pop();
+      } else if (Platform.isIOS) {
+        exit(0);
+      }
 
      return false;
     }
