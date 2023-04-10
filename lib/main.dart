@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +44,6 @@ class WebPage extends StatefulWidget {
 }
 
 class _WebPageState extends State<WebPage> {
-
   Future<void> _launchUrl(String url) async {
     if (!await launchUrl(Uri.parse(url))) {
       throw 'Could not launch $url';
@@ -112,10 +112,10 @@ class _WebPageState extends State<WebPage> {
                 } else {
                   return NavigationDecision.navigate;
                 }
-              }else{
+              } else {
                 return NavigationDecision.navigate;
               }
-            }else if (url.startsWith('https://www.youtube.com/')) {
+            } else if (url.startsWith('https://www.youtube.com/')) {
               return NavigationDecision.prevent;
             } else if (url.startsWith('whatsapp://send')) {
               _launchUrl(url);
@@ -141,7 +141,8 @@ class _WebPageState extends State<WebPage> {
       ..loadRequest(Uri.parse(webLink));
   }
 
-  String webLink ='https://roketnot.com/';
+  String webLink = 'https://roketnot.com/';
+
   // String webLink ='https://www.trendyol.com/';
 
   Future<bool> _onBack() async {
@@ -150,13 +151,28 @@ class _WebPageState extends State<WebPage> {
       controller.goBack();
       return false;
     } else {
-      if (Platform.isAndroid) {
-        SystemNavigator.pop();
-      } else if (Platform.isIOS) {
-        exit(0);
-      }
-
-     return false;
+      showDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text('Uygulamadan çıkmak istiyor musunuz?'),
+                actions: [
+                  TextButton(
+                    child: Text('Hayır'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  TextButton(
+                    child: Text('Evet'),
+                    onPressed: () {
+                      if (Platform.isAndroid) {
+                        SystemNavigator.pop();
+                      } else if (Platform.isIOS) {
+                        exit(0);
+                      }
+                    },
+                  ),
+                ],
+              ));
+      return false;
     }
   }
 
@@ -171,9 +187,6 @@ class _WebPageState extends State<WebPage> {
   }
 
   int sensitivity = 100;
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -190,14 +203,17 @@ class _WebPageState extends State<WebPage> {
                 Positioned(
                   bottom: 20,
                   left: 10,
-                  child: Platform.isIOS ? backButton(): backButton(), // Android için SizeBox diyebilirsin kapanır
+                  child: Platform.isIOS
+                      ? backButton()
+                      : backButton(), // Android için SizeBox diyebilirsin kapanır
                 ),
                 Positioned(
                   bottom: 20,
                   left: 70,
-                  child:Platform.isIOS ? nextButton():nextButton(),// Android için SizeBox diyebilirsin kapanır
+                  child: Platform.isIOS
+                      ? nextButton()
+                      : nextButton(), // Android için SizeBox diyebilirsin kapanır
                 ),
-
               ],
             ),
           ),
@@ -208,29 +224,29 @@ class _WebPageState extends State<WebPage> {
 
   InkWell nextButton() {
     return InkWell(
-                  onTap: _onForward,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.all(12),
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                  ),
-                );
+      onTap: _onForward,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.all(12),
+        child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+      ),
+    );
   }
 
   InkWell backButton() {
     return InkWell(
-                  onTap: _onBack,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.all(12),
-                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                  ),
-                );
+      onTap: _onBack,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.all(12),
+        child: Icon(Icons.arrow_back_ios, color: Colors.white),
+      ),
+    );
   }
 }
